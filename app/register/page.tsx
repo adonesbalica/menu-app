@@ -55,7 +55,7 @@ export default function RegisterRoute() {
       return;
     }
 
-    router.push("/dashboard");
+    router.push("/");
   }
 
   return (

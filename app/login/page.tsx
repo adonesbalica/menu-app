@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { redirect } from "next/navigation";
 import {
   Card,
   CardContent,
@@ -8,9 +8,16 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { signIn } from "../utils/auth";
+import { SubmitLoginButton } from "../components/SubmitButtons";
+import { auth, signIn } from "../utils/auth";
 
-export default function LoginRoute() {
+export default async function LoginRoute() {
+  const session = await auth();
+
+  if (session?.user) {
+    redirect("/");
+  }
+
   return (
     <>
       <div className="h-screen flex items-center justify-center">
@@ -47,7 +54,7 @@ export default function LoginRoute() {
                   type="password"
                 />
               </div>
-              <Button>Login</Button>
+              <SubmitLoginButton />
             </form>
           </CardContent>
         </Card>

@@ -6,7 +6,6 @@ import { prisma } from "./prisma";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma),
-
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -22,21 +21,19 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           placeholder: "••••••••",
         },
       },
-      async authorize(credentials: Record<"email" | "password", string>) {
-        if (!credentials?.email || !credentials?.password) {
-          return null;
-        }
+      async authorize(credentials) {
+        const email = credentials?.email as string;
+        const password = credentials?.password as string;
+
+        if (!email || !password) return null;
 
         const user = await prisma.user.findUnique({
-          where: { email: credentials.email },
+          where: { email },
         });
 
         if (!user) return null;
 
-        const isValid = await bcrypt.compare(
-          credentials.password,
-          user.password,
-        );
+        const isValid = await bcrypt.compare(password, user.password as string);
 
         if (!isValid) return null;
 
@@ -48,6 +45,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
     }),
   ],
+  session: {
+    strategy: "jwt",
+  },
   pages: {
     signIn: "/login",
   },
