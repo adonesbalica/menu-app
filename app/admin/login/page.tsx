@@ -8,14 +8,14 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { SubmitLoginButton } from "../components/SubmitButtons";
-import { auth, signIn } from "../utils/auth";
+import { SubmitLoginButton } from "../../components/SubmitButtons";
+import { auth, signIn } from "../../utils/auth";
 
 export default async function LoginRoute() {
   const session = await auth();
 
   if (session?.user) {
-    redirect("/");
+    redirect("/admin");
   }
 
   return (
@@ -23,8 +23,10 @@ export default async function LoginRoute() {
       <div className="h-screen flex items-center justify-center">
         <Card className="w-full max-w-md">
           <CardHeader>
-            <CardTitle>Login</CardTitle>
-            <CardDescription>Acesse o painel administrativo</CardDescription>
+            <CardTitle>Acesso admin</CardTitle>
+            <CardDescription>
+              Entre para gerenciar o cardápio e pedidos.
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <form

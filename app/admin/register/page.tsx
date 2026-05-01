@@ -55,7 +55,7 @@ export default function RegisterRoute() {
       return;
     }
 
-    router.push("/");
+    router.push("/menu");
   }
 
   return (

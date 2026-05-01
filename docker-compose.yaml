@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: bitnami/postgresql:latest
+    container_name: menu-app-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRESQL_USERNAME=postgres  
+      - POSTGRESQL_PASSWORD=postgres
+      - POSTGRESQL_DATABASE=app_db
+    volumes:
+      - postgres_data:/bitnami/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d app_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+    driver: local
