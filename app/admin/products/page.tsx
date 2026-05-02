@@ -1,6 +1,5 @@
-import { Plus } from "lucide-react";
+import { CreateProduct } from "@/app/components/CreateProduct";
 import ProductCard from "@/app/components/ProductCard";
-import { Button } from "@/components/ui/button";
 
 export default function ProductsRoute() {
   return (
@@ -11,10 +10,9 @@ export default function ProductsRoute() {
           <p>Cadastre itens com adicionais e fotos.</p>
         </div>
 
-        <Button className="p-4 rounded-3xl">
-          <Plus />
-          Nova
-        </Button>
+        <div>
+          <CreateProduct />
+        </div>
       </div>
       <div className="grid grid-cols-2 gap-4">
         <ProductCard />

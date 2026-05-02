@@ -1,8 +1,10 @@
-import { Plus } from "lucide-react";
 import CategoryRow from "@/app/components/CategoryRow";
-import { Button } from "@/components/ui/button";
+import { CreateCategory } from "@/app/components/CreateCategory";
+import { getCategories } from "@/app/data/get-categories";
 
-export default function CategoriesRoute() {
+export default async function CategoriesRoute() {
+  const categories = await getCategories();
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
@@ -11,14 +13,24 @@ export default function CategoriesRoute() {
           <p>Organize os produtos do cardápio.</p>
         </div>
 
-        <Button className="p-4 rounded-3xl">
-          <Plus />
-          Nova
-        </Button>
+        <CreateCategory />
       </div>
       <div className="bg-white border border-stone-200 rounded-2xl overflow-hidden">
         <div className="divide-y divide-stone-100">
-          <CategoryRow />
+          {categories.length >= 1 ? (
+            categories.map((cat) => (
+              <CategoryRow
+                id={cat.id}
+                name={cat.name}
+                order={cat.order}
+                key={cat.id}
+              />
+            ))
+          ) : (
+            <div className="p-8 text-center text-stone-500 text-sm">
+              Nenhuma categoria cadastrada.
+            </div>
+          )}
         </div>
       </div>
     </div>

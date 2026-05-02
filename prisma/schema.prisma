@@ -19,6 +19,7 @@ model User {
   password      String?
   emailVerified DateTime?
   image         String?
+  role          Role            @default(admin)
   accounts      Account[]
   sessions      Session[]
   // Optional for WebAuthn support
@@ -81,4 +82,134 @@ model Authenticator {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, credentialID])
+}
+
+model Category {
+  id        String    @id @default(uuid())
+  name      String
+  order     Int       @default(0)
+  createdAt DateTime  @default(now()) @map("created_at")
+  products  Product[]
+
+  @@map("categories")
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  price       Decimal  @db.Decimal(10, 2)
+  imageUrl    String?  @map("image_url")
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  categoryId String   @map("category_id")
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  addonGroups AddonGroup[]
+
+  @@map("products")
+}
+
+model AddonGroup {
+  id          String  @id @default(uuid())
+  name        String
+  required    Boolean @default(false)
+  multiSelect Boolean @default(false) @map("multi_select")
+  maxSelect   Int     @default(1)
+
+  productId String  @map("product_id")
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  options AddonOption[]
+
+  @@map("addon_groups")
+}
+
+model AddonOption {
+  id    String  @id @default(uuid())
+  name  String
+  price Decimal @db.Decimal(10, 2)
+
+  addonGroupId String     @map("addon_group_id")
+  addonGroup   AddonGroup @relation(fields: [addonGroupId], references: [id], onDelete: Cascade)
+
+  @@map("addon_options")
+}
+
+model Order {
+  id            String       @id @default(uuid())
+  customerName  String       @map("customer_name")
+  customerPhone String       @map("customer_phone")
+  deliveryType  DeliveryType
+  address       String?
+  paymentMethod String       @map("payment_method")
+  notes         String?
+  total         Decimal      @db.Decimal(10, 2)
+  status        OrderStatus  @default(pending)
+  createdAt     DateTime     @default(now()) @map("created_at")
+
+  items OrderItem[]
+
+  @@index([status])
+  @@index([createdAt])
+  @@map("orders")
+}
+
+model OrderItem {
+  id        String  @id @default(uuid())
+  productId String  @map("product_id")
+  name      String
+  unitPrice Decimal @map("unit_price") @db.Decimal(10, 2)
+  quantity  Int
+  notes     String?
+  subtotal  Decimal @db.Decimal(10, 2)
+
+  orderId String @map("order_id")
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  addons OrderItemAddon[]
+
+  @@map("order_items")
+}
+
+model OrderItemAddon {
+  id         String  @id @default(uuid())
+  groupName  String  @map("group_name")
+  optionName String  @map("option_name")
+  price      Decimal @db.Decimal(10, 2)
+
+  orderItemId String    @map("order_item_id")
+  orderItem   OrderItem @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
+
+  @@map("order_item_addons")
+}
+
+model Settings {
+  id             String  @id @default("global")
+  whatsappNumber String  @map("whatsapp_number")
+  restaurantName String  @map("restaurant_name")
+  tagline        String?
+  heroImage      String? @map("hero_image")
+  logoUrl        String? @map("logo_url")
+
+  @@map("settings")
+}
+
+enum Role {
+  admin
+  staff
+}
+
+enum DeliveryType {
+  delivery
+  pickup
+}
+
+enum OrderStatus {
+  pending
+  preparing
+  dispatched
+  delivered
+  canceled
 }
